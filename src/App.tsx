@@ -394,15 +394,9 @@ function CodingGame({ timeLimit, score, setScore, mistakes, setMistakes, onEnd }
   const [currentNumber, setCurrentNumber] = useState<number>(1);
   const [feedback, setFeedback] = useState<'correct' | 'incorrect' | null>(null);
 
-  // Initialize map once
+  // Initial generation
   useEffect(() => {
-    const shuffled = shuffleArray([...ALL_SYMBOLS]);
-    const newMap = new Map();
-    for (let i = 1; i <= 5; i++) {
-      newMap.set(i, shuffled[i - 1]);
-    }
-    setMap(newMap);
-    setButtonOrder(shuffleArray([1, 2, 3, 4, 5]));
+    generateRound();
   }, []);
 
   useEffect(() => {
@@ -412,11 +406,20 @@ function CodingGame({ timeLimit, score, setScore, mistakes, setMistakes, onEnd }
   }, [round, map]);
 
   const generateRound = () => {
+    // Reshuffle map and button order every round for higher difficulty
+    const shuffled = shuffleArray([...ALL_SYMBOLS]);
+    const newMap = new Map();
+    for (let i = 1; i <= 5; i++) {
+      newMap.set(i, shuffled[i - 1]);
+    }
+    setMap(newMap);
+    setButtonOrder(shuffleArray([1, 2, 3, 4, 5]));
+
     // Avoid repeating the same number
     let nextNum;
     do {
       nextNum = Math.floor(Math.random() * 5) + 1;
-    } while (nextNum === currentNumber && map.size > 0);
+    } while (nextNum === currentNumber);
 
     setCurrentNumber(nextNum);
     setFeedback(null);
