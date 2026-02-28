@@ -394,16 +394,10 @@ function CodingGame({ timeLimit, score, setScore, mistakes, setMistakes, onEnd }
   const [currentNumber, setCurrentNumber] = useState<number>(1);
   const [feedback, setFeedback] = useState<'correct' | 'incorrect' | null>(null);
 
-  // Initial generation
+  // Regenerate every time the round changes
   useEffect(() => {
     generateRound();
-  }, []);
-
-  useEffect(() => {
-    if (map.size > 0) {
-      generateRound();
-    }
-  }, [round, map]);
+  }, [round]);
 
   const generateRound = () => {
     // Reshuffle map and button order every round for higher difficulty
