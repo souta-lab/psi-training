@@ -391,6 +391,7 @@ function CodingGame({ timeLimit, score, setScore, mistakes, setMistakes, onEnd }
   const [round, setRound] = useState(0);
   const [map, setMap] = useState<Map<number, any>>(new Map());
   const [buttonOrder, setButtonOrder] = useState<number[]>([]);
+  const [tableOrder, setTableOrder] = useState<number[]>([]);
   const [currentNumber, setCurrentNumber] = useState<number>(1);
   const [feedback, setFeedback] = useState<'correct' | 'incorrect' | null>(null);
 
@@ -408,6 +409,7 @@ function CodingGame({ timeLimit, score, setScore, mistakes, setMistakes, onEnd }
     }
     setMap(newMap);
     setButtonOrder(shuffleArray([1, 2, 3, 4, 5]));
+    setTableOrder(shuffleArray([1, 2, 3, 4, 5]));
 
     // Avoid repeating the same number
     let nextNum;
@@ -441,14 +443,14 @@ function CodingGame({ timeLimit, score, setScore, mistakes, setMistakes, onEnd }
         {/* Key Map */}
         <div className="w-full mb-8">
           <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-2 text-center font-medium">対応表</p>
-          <div className="flex justify-center gap-2 sm:gap-4 p-4 bg-white dark:bg-zinc-800 rounded-2xl border-2 border-zinc-200 dark:border-zinc-700 shadow-sm">
-            {[1, 2, 3, 4, 5].map((num) => {
+          <div className="flex justify-center flex-wrap gap-2 sm:gap-4 p-5 bg-white dark:bg-zinc-800 rounded-2xl border-2 border-zinc-200 dark:border-zinc-700 shadow-sm">
+            {tableOrder.map((num) => {
               const Icon = map.get(num);
               return (
                 <div key={num} className="flex flex-col items-center">
-                  <span className="text-xl font-mono font-bold text-zinc-400 dark:text-zinc-500 mb-2">{num}</span>
-                  <div className="w-12 h-12 flex items-center justify-center bg-zinc-50 dark:bg-zinc-900 rounded-xl border border-zinc-100 dark:border-zinc-700">
-                    <Icon className="w-6 h-6 text-zinc-800 dark:text-zinc-100" strokeWidth={2.5} />
+                  <span className="text-xl font-mono font-black text-zinc-400 dark:text-zinc-500 mb-1">{num}</span>
+                  <div className="w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center bg-zinc-50 dark:bg-zinc-900 rounded-xl border-2 border-zinc-100 dark:border-zinc-700">
+                    <Icon className="w-8 h-8 text-zinc-800 dark:text-zinc-100" strokeWidth={3} />
                   </div>
                 </div>
               );
