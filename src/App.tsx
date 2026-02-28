@@ -202,7 +202,7 @@ export default function App() {
               key="result"
               score={score}
               mistakes={mistakes}
-              pri={currentPri}
+              psi={currentPsi}
               elapsed={currentElapsed}
               gameType={gameType}
               onRetry={() => startGame(gameType)}
