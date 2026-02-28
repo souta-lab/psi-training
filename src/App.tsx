@@ -28,21 +28,21 @@ type StatEntry = {
   id: string;
   date: number;
   gameType: GameType;
-  pri: number;
+  psi: number;
   score: number;
   mistakes: number;
   timeLimit: TimeLimit;
   elapsed: number;
 };
 
-const calculatePRI = (score: number, mistakes: number, elapsedSeconds: number, gameType: GameType) => {
+const calculatePSI = (score: number, mistakes: number, elapsedSeconds: number, gameType: GameType) => {
   if (elapsedSeconds < 10) return 0;
   const rawScore = Math.max(0, score - (mistakes * 1.0));
   const ratePerMinute = (rawScore / elapsedSeconds) * 60;
   const mean = gameType === 'symbol-match' ? 45 : 30;
   const sd = gameType === 'symbol-match' ? 12 : 8;
-  let pri = 100 + ((ratePerMinute - mean) / sd) * 15;
-  return Math.max(40, Math.min(160, Math.round(pri)));
+  let psi = 100 + ((ratePerMinute - mean) / sd) * 15;
+  return Math.max(40, Math.min(160, Math.round(psi)));
 };
 
 function useGameTimer(timeLimit: TimeLimit, onEnd: (elapsed: number) => void) {
@@ -84,22 +84,47 @@ export default function App() {
   const [score, setScore] = useState(0);
   const [mistakes, setMistakes] = useState(0);
   const [stats, setStats] = useState<StatEntry[]>([]);
-  const [currentPri, setCurrentPri] = useState(0);
+  const [currentPsi, setCurrentPsi] = useState(0);
   const [currentElapsed, setCurrentElapsed] = useState(0);
   const [darkMode, setDarkMode] = useState(() => {
-    const saved = localStorage.getItem('pri_theme');
+    const saved = localStorage.getItem('psi_theme') || localStorage.getItem('pri_theme');
     if (saved) return saved === 'dark';
     return window.matchMedia('(prefers-color-scheme: dark)').matches;
   });
 
   useEffect(() => {
-    localStorage.setItem('pri_theme', darkMode ? 'dark' : 'white');
+    // Migration: pri -> psi
+    const oldStats = localStorage.getItem('pri_stats');
+    if (oldStats && !localStorage.getItem('psi_stats')) {
+      try {
+        const parsed = JSON.parse(oldStats);
+        const migrated = parsed.map((s: any) => ({
+          ...s,
+          psi: s.psi || s.pri // migration mapping
+        }));
+        localStorage.setItem('psi_stats', JSON.stringify(migrated));
+        localStorage.removeItem('pri_stats');
+        setStats(migrated);
+      } catch (e) {
+        console.error("Migration failed", e);
+      }
+    }
+
+    const oldTheme = localStorage.getItem('pri_theme');
+    if (oldTheme && !localStorage.getItem('psi_theme')) {
+      localStorage.setItem('psi_theme', oldTheme);
+      localStorage.removeItem('pri_theme');
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('psi_theme', darkMode ? 'dark' : 'white');
   }, [darkMode]);
 
   const toggleDarkMode = () => setDarkMode(!darkMode);
 
   useEffect(() => {
-    const saved = localStorage.getItem('pri_stats');
+    const saved = localStorage.getItem('psi_stats');
     if (saved) {
       try { setStats(JSON.parse(saved)); } catch (e) { }
     }
@@ -113,8 +138,8 @@ export default function App() {
   };
 
   const endGame = useCallback((finalElapsed: number) => {
-    const pri = calculatePRI(score, mistakes, finalElapsed, gameType);
-    setCurrentPri(pri);
+    const psi = calculatePSI(score, mistakes, finalElapsed, gameType);
+    setCurrentPsi(psi);
     setCurrentElapsed(finalElapsed);
 
     if (finalElapsed >= 10) {
@@ -122,7 +147,7 @@ export default function App() {
         id: Date.now().toString(),
         date: Date.now(),
         gameType,
-        pri,
+        psi,
         score,
         mistakes,
         timeLimit,
@@ -130,7 +155,7 @@ export default function App() {
       };
       const updatedStats = [...stats, newStat];
       setStats(updatedStats);
-      localStorage.setItem('pri_stats', JSON.stringify(updatedStats));
+      localStorage.setItem('psi_stats', JSON.stringify(updatedStats));
     }
     setScreen('result');
   }, [gameType, score, mistakes, timeLimit, stats]);
@@ -220,7 +245,7 @@ function ScientificInsights() {
           <div className="p-4 bg-indigo-50/50 dark:bg-indigo-900/20 rounded-2xl border border-indigo-100/50 dark:border-indigo-500/20">
             <h3 className="flex items-center gap-2 text-sm font-bold text-indigo-900 dark:text-indigo-300 mb-2">
               <Brain className="w-4 h-4" />
-              処理速度指標（PRI/PSI）とは？
+              処理速度指標（PSI）とは？
             </h3>
             <p className="text-xs leading-relaxed text-indigo-800/80 dark:text-indigo-400/80">
               知能検査（WISC-IV/WAIS-IV）における主要な指標の一つです。視覚情報を正確に識別し、素早く処理する「脳のCPU速度」に相当します。この速度が高いほど、学習効率の向上や、一度に多くの情報を扱う複雑な作業が容易になります。
@@ -257,7 +282,7 @@ function HomeScreen({ onStart, timeLimit, setTimeLimit, onStats, darkMode, onTog
       </button>
 
       <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight mb-2 dark:text-white">PRI Training</h1>
+        <h1 className="text-3xl font-bold tracking-tight mb-2 dark:text-white">PSI Training</h1>
         <p className="text-zinc-500 dark:text-zinc-400 text-sm">
           認知機能を科学的に鍛える処理速度トレーニング
         </p>
@@ -612,14 +637,14 @@ function ResultScreen({ score, mistakes, pri, elapsed, gameType, onRetry, onHome
     >
       <div className="mb-8">
         <h2 className="text-sm font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-2">
-          Processing Speed Index
+          Processing Speed Index (PSI)
         </h2>
         {elapsed < 10 ? (
           <div className="text-2xl font-bold text-zinc-500 mb-2 py-4">測定不能<br /><span className="text-sm font-normal">（プレイ時間が短すぎます）</span></div>
         ) : (
           <>
             <div className="text-6xl font-black text-indigo-600 dark:text-indigo-400 mb-2">{pri}</div>
-            <p className="text-zinc-500 dark:text-zinc-400 text-sm">推定PRI (平均100)</p>
+            <p className="text-zinc-500 dark:text-zinc-400 text-sm">推定PSI (平均100)</p>
           </>
         )}
       </div>
@@ -662,7 +687,7 @@ function ResultScreen({ score, mistakes, pri, elapsed, gameType, onRetry, onHome
 function StatsScreen({ stats, onHome, darkMode }: { stats: StatEntry[], onHome: () => void, darkMode: boolean, key?: React.Key }) {
   const data = stats.map((s, i) => ({
     name: `${new Date(s.date).getMonth() + 1}/${new Date(s.date).getDate()}`,
-    pri: s.pri,
+    psi: s.psi,
     game: s.gameType === 'symbol-match' ? '記号探し' : '符号'
   }));
 
@@ -700,7 +725,7 @@ function StatsScreen({ stats, onHome, darkMode }: { stats: StatEntry[], onHome: 
                 itemStyle={{ color: darkMode ? '#f4f4f5' : '#18181b' }}
               />
               <ReferenceLine y={100} stroke={darkMode ? '#52525b' : '#a1a1aa'} strokeDasharray="3 3" />
-              <Line type="monotone" dataKey="pri" stroke="#4f46e5" strokeWidth={3} dot={{ r: 4, fill: '#4f46e5', strokeWidth: 2, stroke: darkMode ? '#18181b' : '#fff' }} activeDot={{ r: 6 }} />
+              <Line type="monotone" dataKey="psi" stroke="#4f46e5" strokeWidth={3} dot={{ r: 4, fill: '#4f46e5', strokeWidth: 2, stroke: darkMode ? '#18181b' : '#fff' }} activeDot={{ r: 6 }} />
             </LineChart>
           </ResponsiveContainer>
         </div>

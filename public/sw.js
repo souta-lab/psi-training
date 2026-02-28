@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pri-training-v3';
+const CACHE_NAME = 'psi-training-v1';
 // Only cache static files that always exist at these paths
 const ASSETS = [
   './',
