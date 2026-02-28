@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Star, Circle, Triangle, Square, Hexagon, Diamond, Cloud, Sun, Moon, Heart,
-  Zap, Flame, Droplet, Leaf, Snowflake, Play, RotateCcw, Home as HomeIcon, Check, X, BarChart2
+  Zap, Flame, Droplet, Leaf, Snowflake, Play, RotateCcw, Home as HomeIcon, Check, X, BarChart2, Info, Brain
 } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
 
@@ -198,6 +198,49 @@ export default function App() {
   );
 }
 
+function ScientificInsights() {
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <div className="mt-8 text-left border-t border-zinc-100 dark:border-zinc-800 pt-6">
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className="flex items-center gap-2 text-zinc-500 dark:text-zinc-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors w-full"
+      >
+        <Info className="w-4 h-4" />
+        <span className="text-xs font-bold uppercase tracking-wider">科学的な背景と効果</span>
+      </button>
+
+      {expanded && (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          className="mt-4 space-y-4"
+        >
+          <div className="p-4 bg-indigo-50/50 dark:bg-indigo-900/20 rounded-2xl border border-indigo-100/50 dark:border-indigo-500/20">
+            <h3 className="flex items-center gap-2 text-sm font-bold text-indigo-900 dark:text-indigo-300 mb-2">
+              <Brain className="w-4 h-4" />
+              処理速度指標（PRI/PSI）とは？
+            </h3>
+            <p className="text-xs leading-relaxed text-indigo-800/80 dark:text-indigo-400/80">
+              知能検査（WISC-IV/WAIS-IV）における主要な指標の一つです。視覚情報を正確に識別し、素早く処理する「脳のCPU速度」に相当します。この速度が高いほど、学習効率の向上や、一度に多くの情報を扱う複雑な作業が容易になります。
+            </p>
+          </div>
+
+          <div className="p-4 bg-emerald-50/50 dark:bg-emerald-900/20 rounded-2xl border border-emerald-100/50 dark:border-emerald-500/20">
+            <h3 className="text-sm font-bold text-emerald-900 dark:text-emerald-300 mb-2">
+              なぜ「ランダム化」が必要なのか
+            </h3>
+            <p className="text-xs leading-relaxed text-emerald-800/80 dark:text-emerald-400/80">
+              同じ配置で練習を繰り返すと、脳は「運動の自動化（筋肉の記憶）」を行い、認知的な負荷が減少してしまいます。このアプリが毎問シャッフルを行うのは、常に「新しい視覚探索」を強制し、脳の可塑性を最大限に引き出すためです。
+            </p>
+          </div>
+        </motion.div>
+      )}
+    </div>
+  );
+}
+
 function HomeScreen({ onStart, timeLimit, setTimeLimit, onStats, darkMode, onToggleDark }: any) {
   return (
     <motion.div
@@ -216,7 +259,7 @@ function HomeScreen({ onStart, timeLimit, setTimeLimit, onStats, darkMode, onTog
       <div className="mb-8">
         <h1 className="text-3xl font-bold tracking-tight mb-2 dark:text-white">PRI Training</h1>
         <p className="text-zinc-500 dark:text-zinc-400 text-sm">
-          科学的に処理速度（Processing Speed Index）を鍛える認知トレーニングゲーム
+          認知機能を科学的に鍛える処理速度トレーニング
         </p>
       </div>
 
@@ -241,8 +284,8 @@ function HomeScreen({ onStart, timeLimit, setTimeLimit, onStats, darkMode, onTog
           className="w-full group relative flex items-center justify-between p-4 rounded-2xl border-2 border-zinc-200 dark:border-zinc-800 hover:border-indigo-500 dark:hover:border-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-950/30 transition-all text-left"
         >
           <div>
-            <h2 className="font-semibold text-lg group-hover:text-indigo-700 dark:text-zinc-200 dark:group-hover:text-indigo-400">記号探し (Symbol Search)</h2>
-            <p className="text-sm text-zinc-500 dark:text-zinc-400 group-hover:text-indigo-600/80 dark:group-hover:text-indigo-400/80">ターゲット記号がリストにあるか素早く判断します。</p>
+            <h2 className="font-semibold text-lg group-hover:text-indigo-700 dark:text-zinc-200 dark:group-hover:text-indigo-400">記号探し</h2>
+            <p className="text-sm text-zinc-500 dark:text-zinc-400 group-hover:text-indigo-600/80 dark:group-hover:text-indigo-400/80">視覚的な探索と識別の速度を向上させます。</p>
           </div>
           <div className="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 group-hover:bg-indigo-100 dark:group-hover:bg-indigo-900/50 flex items-center justify-center text-zinc-400 dark:text-zinc-500 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors shrink-0 ml-4">
             <Play className="w-5 h-5 ml-1" />
@@ -254,8 +297,8 @@ function HomeScreen({ onStart, timeLimit, setTimeLimit, onStats, darkMode, onTog
           className="w-full group relative flex items-center justify-between p-4 rounded-2xl border-2 border-zinc-200 dark:border-zinc-800 hover:border-emerald-500 dark:hover:border-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition-all text-left"
         >
           <div>
-            <h2 className="font-semibold text-lg group-hover:text-emerald-700 dark:text-zinc-200 dark:group-hover:text-emerald-400">符号 (Coding)</h2>
-            <p className="text-sm text-zinc-500 dark:text-zinc-400 group-hover:text-emerald-600/80 dark:group-hover:text-emerald-400/80">数字に対応する記号を素早く入力します。</p>
+            <h2 className="font-semibold text-lg group-hover:text-emerald-700 dark:text-zinc-200 dark:group-hover:text-emerald-400">符号</h2>
+            <p className="text-sm text-zinc-500 dark:text-zinc-400 group-hover:text-emerald-600/80 dark:group-hover:text-emerald-400/80">情報の置き換えと処理の流暢性を鍛えます。</p>
           </div>
           <div className="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 group-hover:bg-emerald-100 dark:group-hover:bg-emerald-900/50 flex items-center justify-center text-zinc-400 dark:text-zinc-500 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors shrink-0 ml-4">
             <Play className="w-5 h-5 ml-1" />
@@ -268,8 +311,10 @@ function HomeScreen({ onStart, timeLimit, setTimeLimit, onStats, darkMode, onTog
         className="mt-6 w-full flex items-center justify-center gap-2 py-3 bg-zinc-50 dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 rounded-2xl font-bold transition-colors"
       >
         <BarChart2 className="w-5 h-5" />
-        統計データを見る
+        トレーニング統計
       </button>
+
+      <ScientificInsights />
     </motion.div>
   );
 }
