@@ -440,8 +440,24 @@ function CodingGame({ timeLimit, score, setScore, mistakes, setMistakes, onEnd }
     <GameContainer timeLimit={timeLimit} timeDisplay={timeDisplay} score={score} mistakes={mistakes} title="符号" onStop={stop}>
       <div className="flex-1 flex flex-col items-center justify-between w-full py-4">
 
+        {/* Current Target */}
+        <div className="flex-1 flex items-center justify-center w-full min-h-[160px]">
+          <AnimatePresence mode="popLayout">
+            <motion.div
+              key={round}
+              initial={{ opacity: 0, scale: 0.5 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 1.5 }}
+              transition={{ duration: 0.15 }}
+              className="text-9xl font-mono font-black text-zinc-900 dark:text-white"
+            >
+              {currentNumber}
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
         {/* Key Map */}
-        <div className="w-full mb-8">
+        <div className="w-full mb-4">
           <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-2 text-center font-medium">対応表</p>
           <div className="flex justify-center flex-wrap gap-2 sm:gap-4 p-5 bg-white dark:bg-zinc-800 rounded-2xl border-2 border-zinc-200 dark:border-zinc-700 shadow-sm">
             {tableOrder.map((num) => {
@@ -456,22 +472,6 @@ function CodingGame({ timeLimit, score, setScore, mistakes, setMistakes, onEnd }
               );
             })}
           </div>
-        </div>
-
-        {/* Current Target */}
-        <div className="flex-1 flex items-center justify-center w-full">
-          <AnimatePresence mode="popLayout">
-            <motion.div
-              key={round}
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 1.5 }}
-              transition={{ duration: 0.15 }}
-              className="text-8xl font-mono font-bold text-zinc-900 dark:text-white"
-            >
-              {currentNumber}
-            </motion.div>
-          </AnimatePresence>
         </div>
 
         {/* Input Buttons */}
