@@ -2,7 +2,7 @@
   "name": "PRI Training",
   "short_name": "PRI Train",
   "description": "A cognitive training game designed to improve Processing Speed Index (PRI).",
-  "start_url": "/",
+  "start_url": "/pri-training/",
   "display": "standalone",
   "background_color": "#fafafa",
   "theme_color": "#4f46e5",
