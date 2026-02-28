@@ -624,7 +624,7 @@ function GameContainer({ children, timeLimit, timeDisplay, score, mistakes, titl
   );
 }
 
-function ResultScreen({ score, mistakes, pri, elapsed, gameType, onRetry, onHome }: any) {
+function ResultScreen({ score, mistakes, psi, elapsed, gameType, onRetry, onHome }: any) {
   const total = score + mistakes;
   const accuracy = total > 0 ? Math.round((score / total) * 100) : 0;
 
@@ -643,7 +643,7 @@ function ResultScreen({ score, mistakes, pri, elapsed, gameType, onRetry, onHome
           <div className="text-2xl font-bold text-zinc-500 mb-2 py-4">測定不能<br /><span className="text-sm font-normal">（プレイ時間が短すぎます）</span></div>
         ) : (
           <>
-            <div className="text-6xl font-black text-indigo-600 dark:text-indigo-400 mb-2">{pri}</div>
+            <div className="text-6xl font-black text-indigo-600 dark:text-indigo-400 mb-2">{psi}</div>
             <p className="text-zinc-500 dark:text-zinc-400 text-sm">推定PSI (平均100)</p>
           </>
         )}
