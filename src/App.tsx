@@ -81,6 +81,7 @@ export default function App() {
   const [screen, setScreen] = useState<Screen>('home');
   const [gameType, setGameType] = useState<GameType>(null);
   const [timeLimit, setTimeLimit] = useState<TimeLimit>(60);
+  const [symbolCount, setSymbolCount] = useState<number>(5);
   const [score, setScore] = useState(0);
   const [mistakes, setMistakes] = useState(0);
   const [stats, setStats] = useState<StatEntry[]>([]);
@@ -170,6 +171,8 @@ export default function App() {
               onStart={startGame}
               timeLimit={timeLimit}
               setTimeLimit={setTimeLimit}
+              symbolCount={symbolCount}
+              setSymbolCount={setSymbolCount}
               onStats={() => setScreen('stats')}
               darkMode={darkMode}
               onToggleDark={toggleDarkMode}
@@ -190,6 +193,7 @@ export default function App() {
             <CodingGame
               key="coding"
               timeLimit={timeLimit}
+              symbolCount={symbolCount}
               score={score}
               setScore={setScore}
               mistakes={mistakes}
@@ -266,7 +270,7 @@ function ScientificInsights() {
   );
 }
 
-function HomeScreen({ onStart, timeLimit, setTimeLimit, onStats, darkMode, onToggleDark }: any) {
+function HomeScreen({ onStart, timeLimit, setTimeLimit, symbolCount, setSymbolCount, onStats, darkMode, onToggleDark }: any) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -286,6 +290,21 @@ function HomeScreen({ onStart, timeLimit, setTimeLimit, onStats, darkMode, onTog
         <p className="text-zinc-500 dark:text-zinc-400 text-sm">
           認知機能を科学的に鍛える処理速度トレーニング
         </p>
+      </div>
+
+      <div className="mb-4 text-left">
+        <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-2 font-medium px-1">符号の種類数</p>
+        <div className="flex bg-zinc-100 dark:bg-zinc-800 p-1 rounded-xl">
+          {[3, 4, 5, 6, 7].map(n => (
+            <button
+              key={n}
+              onClick={() => setSymbolCount(n)}
+              className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${symbolCount === n ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white shadow-sm' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'}`}
+            >
+              {n}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="mb-6 text-left">
@@ -456,7 +475,7 @@ function SymbolMatchGame({ timeLimit, score, setScore, mistakes, setMistakes, on
   );
 }
 
-function CodingGame({ timeLimit, score, setScore, mistakes, setMistakes, onEnd }: any) {
+function CodingGame({ timeLimit, symbolCount = 5, score, setScore, mistakes, setMistakes, onEnd }: any) {
   const { timeDisplay, stop } = useGameTimer(timeLimit, onEnd);
   const [round, setRound] = useState(0);
   const [map, setMap] = useState<Map<number, any>>(new Map());
@@ -472,20 +491,21 @@ function CodingGame({ timeLimit, score, setScore, mistakes, setMistakes, onEnd }
 
   const generateRound = () => {
     // Reshuffle map and button order every round for higher difficulty
+    const nums = Array.from({ length: symbolCount }, (_, i) => i + 1);
     const shuffled = shuffleArray([...ALL_SYMBOLS]);
     const newMap = new Map();
-    for (let i = 1; i <= 5; i++) {
+    for (let i = 1; i <= symbolCount; i++) {
       newMap.set(i, shuffled[i - 1]);
     }
     setMap(newMap);
-    setButtonOrder(shuffleArray([1, 2, 3, 4, 5]));
-    setTableOrder(shuffleArray([1, 2, 3, 4, 5]));
+    setButtonOrder(shuffleArray([...nums]));
+    setTableOrder(shuffleArray([...nums]));
 
     // Avoid repeating the same number
     let nextNum;
     do {
-      nextNum = Math.floor(Math.random() * 5) + 1;
-    } while (nextNum === currentNumber);
+      nextNum = Math.floor(Math.random() * symbolCount) + 1;
+    } while (nextNum === currentNumber && symbolCount > 1);
 
     setCurrentNumber(nextNum);
     setFeedback(null);
