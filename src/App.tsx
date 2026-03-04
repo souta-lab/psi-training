@@ -585,7 +585,7 @@ function CodingGame({ timeLimit, symbolCount = 5, score, setScore, mistakes, set
                 <button
                   key={num}
                   onClick={() => handleAnswer(num)}
-                  className="w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center bg-white dark:bg-zinc-800 border-2 border-zinc-200 dark:border-zinc-700 hover:border-emerald-500 dark:hover:border-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 rounded-2xl transition-all active:scale-90 shadow-sm"
+                  className="aspect-square flex items-center justify-center bg-white dark:bg-zinc-800 border-2 border-zinc-200 dark:border-zinc-700 hover:border-emerald-500 dark:hover:border-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 rounded-2xl transition-all active:scale-90 shadow-sm"
                 >
                   <Icon className="w-6 h-6 sm:w-8 sm:h-8 text-zinc-800 dark:text-zinc-100" strokeWidth={2.5} />
                 </button>
