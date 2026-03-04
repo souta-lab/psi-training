@@ -555,13 +555,16 @@ function CodingGame({ timeLimit, symbolCount = 5, score, setScore, mistakes, set
         {/* Key Map */}
         <div className="w-full mb-4">
           <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-2 text-center font-medium">対応表</p>
-          <div className="flex justify-center flex-wrap gap-2 sm:gap-4 p-5 bg-white dark:bg-zinc-800 rounded-2xl border-2 border-zinc-200 dark:border-zinc-700 shadow-sm">
+          <div
+            className="grid gap-2 p-4 bg-white dark:bg-zinc-800 rounded-2xl border-2 border-zinc-200 dark:border-zinc-700 shadow-sm"
+            style={{ gridTemplateColumns: `repeat(${symbolCount <= 5 ? symbolCount : Math.ceil(symbolCount / 2)}, minmax(0, 1fr))` }}
+          >
             {tableOrder.map((num) => {
               const Icon = map.get(num);
               return (
                 <div key={num} className="flex flex-col items-center">
                   <span className="text-xl font-mono font-black text-zinc-400 dark:text-zinc-500 mb-1">{num}</span>
-                  <div className="w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center bg-zinc-50 dark:bg-zinc-900 rounded-xl border-2 border-zinc-100 dark:border-zinc-700">
+                  <div className="w-14 h-14 flex items-center justify-center bg-zinc-50 dark:bg-zinc-900 rounded-xl border-2 border-zinc-100 dark:border-zinc-700">
                     <Icon className="w-8 h-8 text-zinc-800 dark:text-zinc-100" strokeWidth={3} />
                   </div>
                 </div>
@@ -571,8 +574,11 @@ function CodingGame({ timeLimit, symbolCount = 5, score, setScore, mistakes, set
         </div>
 
         {/* Input Buttons */}
-        <div className="w-full mt-8">
-          <div className="flex justify-center gap-2 sm:gap-4">
+        <div className="w-full mt-6">
+          <div
+            className="grid gap-2"
+            style={{ gridTemplateColumns: `repeat(${symbolCount <= 5 ? symbolCount : Math.ceil(symbolCount / 2)}, minmax(0, 1fr))` }}
+          >
             {buttonOrder.map((num) => {
               const Icon = map.get(num);
               return (
