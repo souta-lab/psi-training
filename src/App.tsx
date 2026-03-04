@@ -294,12 +294,12 @@ function HomeScreen({ onStart, timeLimit, setTimeLimit, symbolCount, setSymbolCo
 
       <div className="mb-4 text-left">
         <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-2 font-medium px-1">符号の種類数</p>
-        <div className="flex bg-zinc-100 dark:bg-zinc-800 p-1 rounded-xl">
-          {[3, 4, 5, 6, 7].map(n => (
+        <div className="flex flex-wrap gap-1 bg-zinc-100 dark:bg-zinc-800 p-1 rounded-xl">
+          {Array.from({ length: ALL_SYMBOLS.length - 2 }, (_, i) => i + 3).map(n => (
             <button
               key={n}
               onClick={() => setSymbolCount(n)}
-              className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${symbolCount === n ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white shadow-sm' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'}`}
+              className={`flex-1 min-w-[2rem] py-2 text-sm font-bold rounded-lg transition-all ${symbolCount === n ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white shadow-sm' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'}`}
             >
               {n}
             </button>
