@@ -2,9 +2,9 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Star, Circle, Triangle, Square, Hexagon, Diamond, Cloud, Sun, Moon, Heart,
-  Zap, Flame, Droplet, Leaf, Snowflake, Play, RotateCcw, Home as HomeIcon, Check, X, BarChart2, Info, Brain
+  Zap, Flame, Droplet, Leaf, Snowflake, Play, RotateCcw, Home as HomeIcon, Check, X, BarChart2, Info, Brain, Trash2, TrendingUp
 } from 'lucide-react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
+import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, Legend } from 'recharts';
 
 const ALL_SYMBOLS = [
   Star, Circle, Triangle, Square, Hexagon, Diamond, Cloud, Sun, Moon, Heart,
@@ -161,6 +161,11 @@ export default function App() {
     setScreen('result');
   }, [gameType, score, mistakes, timeLimit, stats]);
 
+  const clearStats = useCallback(() => {
+    setStats([]);
+    localStorage.removeItem('psi_stats');
+  }, []);
+
   return (
     <div className={`${darkMode ? 'dark' : ''} w-full min-h-screen`}>
       <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 font-sans flex flex-col items-center justify-center p-2 sm:p-4 select-none overflow-hidden transition-colors duration-300">
@@ -219,6 +224,7 @@ export default function App() {
               stats={stats}
               onHome={() => setScreen('home')}
               darkMode={darkMode}
+              onClearStats={clearStats}
             />
           )}
         </AnimatePresence>
@@ -704,51 +710,155 @@ function ResultScreen({ score, mistakes, psi, elapsed, gameType, onRetry, onHome
   );
 }
 
-function StatsScreen({ stats, onHome, darkMode }: { stats: StatEntry[], onHome: () => void, darkMode: boolean, key?: React.Key }) {
-  const data = stats.map((s, i) => ({
-    name: `${new Date(s.date).getMonth() + 1}/${new Date(s.date).getDate()}`,
+function StatsScreen({ stats, onHome, darkMode, onClearStats }: { stats: StatEntry[], onHome: () => void, darkMode: boolean, onClearStats: () => void, key?: React.Key }) {
+  const [tab, setTab] = useState<'all' | 'symbol-match' | 'coding'>('all');
+
+  const filtered = tab === 'all' ? stats : stats.filter(s => s.gameType === tab);
+
+  const chartData = filtered.map((s) => ({
+    name: `${new Date(s.date).getMonth() + 1}/${new Date(s.date).getDate()} ${String(new Date(s.date).getHours()).padStart(2, '0')}:${String(new Date(s.date).getMinutes()).padStart(2, '0')}`,
     psi: s.psi,
-    game: s.gameType === 'symbol-match' ? '記号探し' : '符号'
+    accuracy: s.score + s.mistakes > 0 ? Math.round((s.score / (s.score + s.mistakes)) * 100) : 0,
+    ratePerMin: s.elapsed > 0 ? Math.round((s.score / s.elapsed) * 60 * 10) / 10 : 0,
+    game: s.gameType === 'symbol-match' ? '記号探し' : '符号',
   }));
+
+  const avgPsi = filtered.length > 0 ? Math.round(filtered.reduce((a, s) => a + s.psi, 0) / filtered.length) : 0;
+  const bestPsi = filtered.length > 0 ? Math.max(...filtered.map(s => s.psi)) : 0;
+  const avgAcc = filtered.length > 0 ? Math.round(filtered.reduce((a, s) => {
+    const total = s.score + s.mistakes;
+    return a + (total > 0 ? (s.score / total) * 100 : 0);
+  }, 0) / filtered.length) : 0;
+
+  const tooltipStyle = {
+    borderRadius: '12px', border: 'none',
+    boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.15)',
+    backgroundColor: darkMode ? '#18181b' : '#fff',
+    color: darkMode ? '#f4f4f5' : '#18181b',
+    fontSize: '12px',
+  };
+  const tickStyle = { fontSize: 11, fill: darkMode ? '#a1a1aa' : '#71717a' };
+  const gridColor = darkMode ? '#3f3f46' : '#e4e4e7';
 
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
-      className="max-w-2xl w-full bg-white dark:bg-zinc-900 rounded-3xl shadow-sm border border-zinc-200 dark:border-zinc-800 p-8"
+      className="max-w-2xl w-full bg-white dark:bg-zinc-900 rounded-3xl shadow-sm border border-zinc-200 dark:border-zinc-800 p-6 overflow-y-auto max-h-[92vh]"
     >
-      <div className="flex justify-between items-center mb-8">
+      {/* Header */}
+      <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold dark:text-white">トレーニング統計</h2>
-        <button onClick={onHome} className="p-2 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded-full transition-colors text-zinc-600 dark:text-zinc-400">
-          <X className="w-5 h-5" />
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => { if (confirm('統計データをリセットしますか？')) onClearStats(); }}
+            className="p-2 bg-red-50 dark:bg-red-950/30 hover:bg-red-100 dark:hover:bg-red-900/50 rounded-full transition-colors text-red-500 dark:text-red-400"
+            title="データをリセット"
+          >
+            <Trash2 className="w-4 h-4" />
+          </button>
+          <button onClick={onHome} className="p-2 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded-full transition-colors text-zinc-600 dark:text-zinc-400">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
       </div>
 
-      {stats.length === 0 ? (
-        <div className="text-center text-zinc-500 dark:text-zinc-400 py-12">データがありません。プレイして記録を残しましょう！</div>
+      {/* Tabs */}
+      <div className="flex bg-zinc-100 dark:bg-zinc-800 p-1 rounded-xl mb-6">
+        {([['all', 'すべて'], ['symbol-match', '記号探し'], ['coding', '符号']] as const).map(([val, label]) => (
+          <button key={val} onClick={() => setTab(val)}
+            className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${tab === val ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white shadow-sm' : 'text-zinc-500 dark:text-zinc-400'}`}
+          >{label}</button>
+        ))}
+      </div>
+
+      {filtered.length === 0 ? (
+        <div className="text-center text-zinc-500 dark:text-zinc-400 py-16">データがありません。プレイして記録を残しましょう！</div>
       ) : (
-        <div className="h-64 w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={data} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={darkMode ? '#3f3f46' : '#e4e4e7'} />
-              <XAxis dataKey="name" tick={{ fontSize: 12, fill: darkMode ? '#a1a1aa' : '#71717a' }} axisLine={false} tickLine={false} />
-              <YAxis domain={[40, 160]} tick={{ fontSize: 12, fill: darkMode ? '#a1a1aa' : '#71717a' }} axisLine={false} tickLine={false} />
-              <Tooltip
-                contentStyle={{
-                  borderRadius: '12px',
-                  border: 'none',
-                  boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
-                  backgroundColor: darkMode ? '#18181b' : '#fff',
-                  color: darkMode ? '#f4f4f5' : '#18181b'
-                }}
-                itemStyle={{ color: darkMode ? '#f4f4f5' : '#18181b' }}
-              />
-              <ReferenceLine y={100} stroke={darkMode ? '#52525b' : '#a1a1aa'} strokeDasharray="3 3" />
-              <Line type="monotone" dataKey="psi" stroke="#4f46e5" strokeWidth={3} dot={{ r: 4, fill: '#4f46e5', strokeWidth: 2, stroke: darkMode ? '#18181b' : '#fff' }} activeDot={{ r: 6 }} />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
+        <>
+          {/* Summary Cards */}
+          <div className="grid grid-cols-4 gap-3 mb-6">
+            {[
+              { label: 'セッション', value: filtered.length, unit: '回', color: 'text-zinc-800 dark:text-zinc-100' },
+              { label: '平均PSI', value: avgPsi, unit: '', color: 'text-indigo-600 dark:text-indigo-400' },
+              { label: '最高PSI', value: bestPsi, unit: '', color: 'text-emerald-600 dark:text-emerald-400' },
+              { label: '平均正答率', value: avgAcc, unit: '%', color: 'text-amber-600 dark:text-amber-400' },
+            ].map(({ label, value, unit, color }) => (
+              <div key={label} className="bg-zinc-50 dark:bg-zinc-800 rounded-2xl p-3 text-center border border-zinc-100 dark:border-zinc-700">
+                <div className={`text-2xl font-black font-mono ${color}`}>{value}<span className="text-sm font-bold">{unit}</span></div>
+                <div className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">{label}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* PSI Trend */}
+          <div className="mb-6">
+            <p className="text-sm font-bold text-zinc-500 dark:text-zinc-400 mb-3 flex items-center gap-1.5"><TrendingUp className="w-4 h-4" />PSI推移</p>
+            <div className="h-48">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={chartData} margin={{ top: 4, right: 8, bottom: 0, left: -20 }}>
+                  <defs>
+                    <linearGradient id="psiGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.15} />
+                      <stop offset="95%" stopColor="#4f46e5" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridColor} />
+                  <XAxis dataKey="name" tick={tickStyle} axisLine={false} tickLine={false} interval="preserveStartEnd" />
+                  <YAxis domain={[40, 160]} tick={tickStyle} axisLine={false} tickLine={false} />
+                  <Tooltip contentStyle={tooltipStyle} itemStyle={{ color: darkMode ? '#f4f4f5' : '#18181b' }} formatter={(v: any) => [`${v}`, 'PSI']} />
+                  <ReferenceLine y={100} stroke={darkMode ? '#52525b' : '#a1a1aa'} strokeDasharray="4 4" />
+                  <Area type="monotone" dataKey="psi" stroke="#4f46e5" strokeWidth={2.5} fill="url(#psiGrad)" dot={{ r: 3, fill: '#4f46e5', strokeWidth: 0 }} activeDot={{ r: 5 }} />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          {/* Accuracy Trend */}
+          <div className="mb-6">
+            <p className="text-sm font-bold text-zinc-500 dark:text-zinc-400 mb-3">正答率推移 (%)</p>
+            <div className="h-40">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={chartData} margin={{ top: 4, right: 8, bottom: 0, left: -20 }}>
+                  <defs>
+                    <linearGradient id="accGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#10b981" stopOpacity={0.15} />
+                      <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridColor} />
+                  <XAxis dataKey="name" tick={tickStyle} axisLine={false} tickLine={false} interval="preserveStartEnd" />
+                  <YAxis domain={[0, 100]} tick={tickStyle} axisLine={false} tickLine={false} />
+                  <Tooltip contentStyle={tooltipStyle} itemStyle={{ color: darkMode ? '#f4f4f5' : '#18181b' }} formatter={(v: any) => [`${v}%`, '正答率']} />
+                  <Area type="monotone" dataKey="accuracy" stroke="#10b981" strokeWidth={2.5} fill="url(#accGrad)" dot={{ r: 3, fill: '#10b981', strokeWidth: 0 }} activeDot={{ r: 5 }} />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          {/* Score per minute Trend */}
+          <div className="mb-2">
+            <p className="text-sm font-bold text-zinc-500 dark:text-zinc-400 mb-3">スコア/分 推移</p>
+            <div className="h-40">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={chartData} margin={{ top: 4, right: 8, bottom: 0, left: -20 }}>
+                  <defs>
+                    <linearGradient id="rpmGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.15} />
+                      <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridColor} />
+                  <XAxis dataKey="name" tick={tickStyle} axisLine={false} tickLine={false} interval="preserveStartEnd" />
+                  <YAxis tick={tickStyle} axisLine={false} tickLine={false} />
+                  <Tooltip contentStyle={tooltipStyle} itemStyle={{ color: darkMode ? '#f4f4f5' : '#18181b' }} formatter={(v: any) => [`${v}`, 'スコア/分']} />
+                  <Area type="monotone" dataKey="ratePerMin" stroke="#f59e0b" strokeWidth={2.5} fill="url(#rpmGrad)" dot={{ r: 3, fill: '#f59e0b', strokeWidth: 0 }} activeDot={{ r: 5 }} />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </>
       )}
     </motion.div>
   );
