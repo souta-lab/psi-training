@@ -38,3 +38,7 @@ No API key required — fully local.
 ## License
 
 MIT
+
+## Demo
+
+https://souta-lab.github.io/psi-training/
