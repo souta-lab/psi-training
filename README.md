@@ -1,20 +1,40 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# PSI Training
 
-# Run and deploy your AI Studio app
+Cognitive training app for **PSI (Processing Speed Index)** — inspired by WAIS-style subtests.
 
-This contains everything you need to run your app locally.
+Two game modes: **Symbol-Match** and **Coding**, with PSI scoring, stats, and charts.
 
-View your app in AI Studio: https://ai.studio/apps/a34c6ada-056f-42d4-8962-2e560979a64d
+## Modes
 
-## Run Locally
+| Mode | Description |
+|------|-------------|
+| **Symbol-Match** | Match symbols under time pressure |
+| **Coding** | Symbol-digit coding task |
 
-**Prerequisites:**  Node.js
+- Time limits: 30s / 60s / 120s / endless
+- PSI score calculated from rate, accuracy, and elapsed time (40–160)
+- Stats & history with Recharts
 
+## Stack
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+- React 19 + Vite + TypeScript
+- motion, Recharts, lucide-react
+- Capacitor (mobile build)
+
+## Getting Started
+
+```bash
+npm install
+npm run dev      # Vite dev server on :3000
+npm run build    # production build
+```
+
+No API key required — fully local.
+
+## Screenshots
+
+> Add screenshots/GIFs of the game screens here.
+
+## License
+
+MIT
