@@ -33,7 +33,21 @@ No API key required — fully local.
 
 ## Screenshots
 
-> Add screenshots/GIFs of the game screens here.
+_Coming soon — PRs with game screenshots/GIFs welcome._
+
+## PWA
+
+Installable: `public/manifest.json` + `public/sw.js` provide basic offline support (app shell cached on install). Icons are local (`public/icon-192.png`, `public/icon-512.png`).
+
+## Android (Capacitor)
+
+```bash
+npm run build
+npx cap add android   # first time only
+npx cap sync android
+```
+
+App ID: `com.psitraining.app`. CI builds the APK on pushes to `master` (`.github/workflows/build-apk.yml`).
 
 ## License
 

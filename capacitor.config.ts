@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-    appId: 'com.pritraining.app',
+    appId: 'com.psitraining.app',
     appName: 'PSI Training',
     webDir: 'dist',
     server: {

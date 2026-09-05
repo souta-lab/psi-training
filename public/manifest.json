@@ -2,19 +2,20 @@
   "name": "PSI Training",
   "short_name": "PSI Train",
   "description": "A cognitive training game designed to improve Processing Speed Index (PSI).",
-  "start_url": "/pri-training/",
+  "start_url": "/psi-training/",
+  "scope": "/psi-training/",
   "display": "standalone",
   "background_color": "#fafafa",
   "theme_color": "#4f46e5",
   "icons": [
     {
-      "src": "https://picsum.photos/seed/psi-icon-192/192/192",
+      "src": "icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "https://picsum.photos/seed/psi-icon-512/512/512",
+      "src": "icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"

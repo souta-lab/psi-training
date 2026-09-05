@@ -22,11 +22,9 @@
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
-    "autoprefixer": "^10.4.21",
     "tailwindcss": "^4.1.14",
     "tsx": "^4.21.0",
     "typescript": "~5.8.2",
-    "vite": "^6.2.0",
     "@capacitor/cli": "^7.0.0",
     "@capacitor/core": "^7.0.0",
     "@capacitor/android": "^7.0.0"

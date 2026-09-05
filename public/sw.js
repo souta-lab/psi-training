@@ -1,7 +1,25 @@
-// Development mode: no caching
-self.addEventListener('install', () => self.skipWaiting());
-self.addEventListener('activate', (event) => {
+// Minimal offline support: cache the app shell on install,
+// serve cache-first with network fallback, clean up old caches.
+const CACHE = "psi-training-v1";
+const ASSETS = ["./", "./index.html", "./manifest.json", "./icon-192.png", "./icon-512.png"];
+
+self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.keys().then(keys => Promise.all(keys.map(k => caches.delete(k))))
+    caches.open(CACHE).then((cache) => cache.addAll(ASSETS)).then(() => self.skipWaiting())
+  );
+});
+
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    caches.keys()
+      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
+      .then(() => self.clients.claim())
+  );
+});
+
+self.addEventListener("fetch", (event) => {
+  if (event.request.method !== "GET") return;
+  event.respondWith(
+    caches.match(event.request).then((cached) => cached ?? fetch(event.request))
   );
 });
