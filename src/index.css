@@ -22,3 +22,26 @@
     padding-right: env(safe-area-inset-right);
   }
 }
+
+/* Family layer — s0u7a properties shared discipline.
+   ポートフォリオ／QUESTと共通の書体・字間・選択/フォーカス表現を重ねる。
+   このアプリの配色とレイアウトは維持する。 */
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Hiragino Sans",
+    "Noto Sans JP", "Yu Gothic", Meiryo, sans-serif;
+}
+
+h1, h2, h3 {
+  letter-spacing: -0.04em;
+  text-wrap: pretty;
+}
+
+::selection {
+  background: #191b24;
+  color: #f4f5f8;
+}
+
+:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
