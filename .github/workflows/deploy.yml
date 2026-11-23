@@ -1,4 +1,4 @@
-# GitHub Pages は s0u7a.f5.si への移転案内スタブ（redirect/）のみを配信する。
+# GitHub Pages は s0u7a.net への移転案内スタブ（redirect/）のみを配信する。
 # アプリのビルドは公開ジョブから外した（CI は ci.yml で継続）。
 name: Deploy redirect stub to Pages
 
